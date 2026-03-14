@@ -17,51 +17,11 @@ const port = process.env.PORT || 8080;
 app.use(cors());
 app.use(express.json());
 
-const shopifyApiKey = process.env.SHOPIFY_API_KEY;
-const shopifyApiSecret = process.env.SHOPIFY_API_SECRET;
-const shopifyShopName = process.env.SHOPIFY_SHOP_NAME.replace('.myshopify.com', '');
-const scopes = 'read_orders';
-const redirectUri = `http://localhost:${port}/shopify/callback`;
-
-app.get('/shopify/auth', (req, res) => {
-    const authUrl = `https://{shop}.myshopify.com/admin/oauth/authorize?client_id=${shopifyApiKey}&scope=${scopes}&redirect_uri=${redirectUri}`
-        .replace('{shop}', shopifyShopName);
-    res.redirect(authUrl);
-});
-
-app.get('/shopify/callback', async (req, res) => {
-    const { code } = req.query;
-    if (!code) {
-        return res.status(400).send('Missing authorization code');
-    }
-
-    const tokenUrl = `https://{shop}.myshopify.com/admin/oauth/access_token`
-        .replace('{shop}', shopifyShopName);
-
-    const payload = {
-        client_id: shopifyApiKey,
-        client_secret: shopifyApiSecret,
-        code,
-    };
-
-    try {
-        const response = await axios.post(tokenUrl, payload);
-        const accessToken = response.data.access_token;
-
-        console.log('---');
-        console.log('Your Shopify Access Token is:');
-        console.log(accessToken);
-        console.log('---');
-        console.log('Please copy this token and save it in your backend/.env file as SHOPIFY_ACCESS_TOKEN');
-        console.log('---');
-
-
-        res.send('Access token retrieved successfully! Check your server console.');
-    } catch (error) {
-        console.error('Error retrieving access token:', error.response ? error.response.data : error.message);
-        res.status(500).send('Error retrieving access token');
-    }
-});
+// Optional OAuth routes (uncomment if public app)
+// const shopifyApiKey = process.env.SHOPIFY_CLIENT_ID;
+// const shopifyApiSecret = process.env.SHOPIFY_CLIENT_SECRET;
+// const shopifyShopName = process.env.SHOPIFY_STORE.replace('.myshopify.com', '');
+// ... OAuth code ...
 
 
 let shopify = null;
