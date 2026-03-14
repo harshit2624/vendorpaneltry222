@@ -2,10 +2,12 @@ const express = require('express');
 const cors = require('cors');
 const Shopify = require('shopify-api-node');
 const axios = require('axios');
-require('dotenv').config({ path: __dirname + '/.env' });
+require('dotenv').config();
 
-if (!process.env.SHOPIFY_SHOP_NAME || !process.env.SHOPIFY_API_KEY || !process.env.SHOPIFY_API_SECRET) {
-    console.error('Error: Missing Shopify environment variables. Please check your backend/.env file.');
+const requiredVars = ['SHOPIFY_STORE', 'SHOPIFY_CLIENT_ID', 'SHOPIFY_CLIENT_SECRET'];
+const missingVars = requiredVars.filter(v => !process.env[v]);
+if (missingVars.length > 0) {
+    console.error('Missing env vars:', missingVars.join(', '));
     process.exit(1);
 }
 
